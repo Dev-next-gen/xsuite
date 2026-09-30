@@ -44,8 +44,11 @@ def fetch_package_log(package, end):
         last_publish_date = isoparse(log[-1]['published_at'])
 
         if end and last_publish_date > end:
-            # Skip pages that are too new
-            break
+            # Skip pages that are too new. The API returns releases from the
+            # newest to the oldest, so a page whose oldest entry is still newer
+            # than `end` holds nothing we want, but the pages after it do.
+            page += 1
+            continue
 
         full_log += log
         page += 1
